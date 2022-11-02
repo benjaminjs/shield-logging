@@ -2,6 +2,7 @@ import express from 'express'
 import { expressYupMiddleware } from 'express-yup-middleware'
 import K from 'knex'
 import compression from 'compression'
+import cors from 'cors'
 const { knex } = K
 
 import Yup from 'yup'
@@ -26,6 +27,7 @@ const db = knex({
 })
 
 const app = express()
+app.use(cors())
 app.use(compression())
 
 app.use((req, res, next) => {
