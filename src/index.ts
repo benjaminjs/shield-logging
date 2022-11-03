@@ -83,7 +83,7 @@ const queryLogsSchemaValidator = {
                 from: Yup.date(),
                 to: Yup.date(),
                 deviceGeneration: Yup.string(),
-                limit: Yup.number().min(1).max(500).default(100),
+                limit: Yup.number().min(1).max(500),
                 offset: Yup.number().min(0).default(0),
             }),
         },
@@ -109,10 +109,7 @@ app.post(
                 new Date(log.startTime).getTime(),
         }))
         try {
-            await db.transaction(async (trx) => {
-                await trx('logs').insert(logs)
-            })
-
+            await db.transaction(async (trx) => await trx('logs').insert(logs))
             res.status(201).send()
         } catch (err) {
             console.error(err)
@@ -151,7 +148,7 @@ app.get(
                     if (queryParams.to)
                         queryBuilder.where('endTime', '<=', queryParams.to)
 
-                    if (queryParams.limit) queryBuilder.limit(queryParams.limit)
+                    queryBuilder.limit(queryParams.limit ?? 100)
 
                     if (queryParams.offset)
                         queryBuilder.offset(queryParams.offset)
